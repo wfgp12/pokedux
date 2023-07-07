@@ -1,34 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import 'antd/dist/reset.css'
 import './App.css'
+import Searcher from './components/Searcher'
+import { Col } from 'antd'
+import PokemonList from './components/PokemonList'
+import logo from './assets/images/logo.svg'
+import { useEffect, useState } from 'react'
+import { getPokemonsServices } from './services/pokemons.services'
+import { Pokemon } from './models/pokemon.model'
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    getPokemonsServices()
+      .then((resp) => setPokemons(resp))
+      .catch((error) => console.log(error));
+  }, [])
+  const [pokemons, setPokemons] = useState<Pokemon[]>([])
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className='container'>
+      <Col span={5} offset={10}>
+        <img src={logo} alt='Pokedux' />
+      </Col>
+      <Col span={8} offset={8}>
+        <Searcher />
+      </Col>
+      <PokemonList pokemons={pokemons} />
+    </div>
   )
 }
 

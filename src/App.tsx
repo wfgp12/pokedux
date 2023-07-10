@@ -1,32 +1,47 @@
-import 'antd/dist/reset.css'
-import './App.css'
-import Searcher from './components/Searcher'
-import { Col } from 'antd'
-import PokemonList from './components/PokemonList'
-import logo from './assets/images/logo.svg'
-import { useEffect, useState } from 'react'
-import { getPokemonsServices } from './services/pokemons.services'
-import { Pokemon } from './models/pokemon.model'
+// Actions
+import { setPokemonsReducer } from './storage/reducers/pokemons/pokemons.actions';
 
-function App() {
+// Assets
+import logo from './assets/images/logo.svg';
+
+// Components
+import Searcher from './components/Searcher'
+import PokemonList from './components/PokemonList';
+
+// Libraries
+import { Col } from 'antd'
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+// Models
+
+// Services
+import { getPokemonsServices } from './services/pokemons.services';
+
+// Styles
+import './App.css'
+import 'antd/dist/reset.css'
+import { Pokemon, PokemonReducerState } from './models/pokemon.model';
+
+const App = () => {
+
+  const pokemons = useSelector<PokemonReducerState>((state): PokemonReducerState['pokemons'] => state.pokemons);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     getPokemonsServices()
-      .then((resp) => setPokemons(resp))
+      .then((resp: Pokemon[]) => dispatch(setPokemonsReducer(resp)))
       .catch((error) => console.log(error));
-  }, [])
-  const [pokemons, setPokemons] = useState<Pokemon[]>([])
+  }, [dispatch])
 
   return (
     <div className='container'>
-      <Col span={5} offset={10}>
-        <img src={logo} alt='Pokedux' />
-      </Col>
-      <Col span={8} offset={8}>
-        <Searcher />
-      </Col>
-      <PokemonList pokemons={pokemons} />
+      <Col span={5} offset={10}> <img src={logo} alt='Pokedux' /></Col>
+      <Col span={8} offset={8}><Searcher /></Col>
+      <PokemonList pokemons={pokemons as Pokemon[]} />
     </div>
   )
 }
 
-export default App
+export default App 

@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 // Models
 
 // Services
-import { getPokemonsServices } from './services/pokemons.services';
+import { getPokemonsDetailsServices, getPokemonsServices } from './services/pokemons.services';
 
 // Styles
 import './App.css'
@@ -31,7 +31,12 @@ const App = () => {
 
   useEffect(() => {
     getPokemonsServices()
-      .then((resp: Pokemon[]) => dispatch(setPokemonsReducer(resp)))
+      .then(async (resp: Pokemon[]) => {
+        const pokemonsDetails = await Promise.all(
+          resp.map((pokemon) => getPokemonsDetailsServices(pokemon))
+        )
+        dispatch(setPokemonsReducer(pokemonsDetails as Pokemon[]))
+      })
       .catch((error) => console.log(error));
   }, [dispatch])
 

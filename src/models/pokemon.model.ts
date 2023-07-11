@@ -7,7 +7,8 @@ export interface Pokemon {
     sprites?: {
         other: Other
     },
-    types?: Type[]
+    types?: Type[],
+    isFavorite?: boolean
 }
 
 export interface PokemonReducerState {

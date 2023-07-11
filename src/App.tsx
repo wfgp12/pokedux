@@ -1,5 +1,5 @@
 // Actions
-import { setPokemonsReducer } from './storage/reducers/pokemons/pokemons.actions';
+import { setPokemons } from './storage/slices/dataSlice';
 
 // Assets
 import logo from './assets/images/logo.svg';
@@ -11,10 +11,12 @@ import PokemonList from './components/PokemonList';
 // Libraries
 import { Col } from 'antd'
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 
 // Models
+import { Pokemon } from './models/pokemon.model';
+
+// redux - hooks
+import { useAppDispatch, useAppSelector } from './storage/store/hooks';
 
 // Services
 import { getPokemonsDetailsServices, getPokemonsServices } from './services/pokemons.services';
@@ -22,20 +24,18 @@ import { getPokemonsDetailsServices, getPokemonsServices } from './services/poke
 // Styles
 import './App.css'
 import 'antd/dist/reset.css'
-import { Pokemon, PokemonReducerState } from './models/pokemon.model';
 
 const App = () => {
-
-  const pokemons = useSelector<PokemonReducerState>((state): PokemonReducerState['pokemons'] => state.pokemons);
-  const dispatch = useDispatch();
+  const pokemons = useAppSelector((state) => state.dataReducer.pokemons)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     getPokemonsServices()
-      .then(async (resp: Pokemon[]) => {
+      .then(async (resp) => {
         const pokemonsDetails = await Promise.all(
           resp.map((pokemon) => getPokemonsDetailsServices(pokemon))
         )
-        dispatch(setPokemonsReducer(pokemonsDetails as Pokemon[]))
+        dispatch(setPokemons(pokemonsDetails as Pokemon[]))
       })
       .catch((error) => console.log(error));
   }, [dispatch])
@@ -44,7 +44,7 @@ const App = () => {
     <div className='container'>
       <Col span={5} offset={10}> <img src={logo} alt='Pokedux' /></Col>
       <Col span={8} offset={8}><Searcher /></Col>
-      <PokemonList pokemons={pokemons as Pokemon[]} />
+      <PokemonList pokemons={pokemons} />
     </div>
   )
 }
